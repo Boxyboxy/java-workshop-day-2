@@ -13,13 +13,13 @@ import java.util.Date;
  */
 public class BankAccount {
     // All members are private
-    private final String name;
-    private final String accountNumber;
-    private float balance;
-    private ArrayList<String> transactions = new ArrayList<String>();
-    private boolean accountActive = true;
-    private String openingDate;
-    private String closingDate = null;
+    protected final String name;
+    protected final String accountNumber;
+    protected float balance;
+    protected ArrayList<String> transactions = new ArrayList<String>();
+    protected boolean accountActive = true;
+    protected String openingDate;
+    protected String closingDate = null;
 
     // constructors
     public BankAccount(String name) {
@@ -78,41 +78,32 @@ public class BankAccount {
 
     // deposit
     public void deposit(float depositAmount) {
-        try {
-            // update balance, print balance for user experience
-            // add transaction to transaction array
+        // update balance, print balance for user experience
+        // add transaction to transaction array
+        if (depositAmount < 0) {
+            throw new IllegalArgumentException("Withdraw amount exceeds available balance.");
+        } else {
             this.balance += depositAmount;
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
             System.out.println("Deposited $" + depositAmount + " at " + timeStamp);
             this.printBalance();
             this.transactions.add("Deposited $" + depositAmount + " at " + timeStamp);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error! Deposit function only accepts positive amounts.");
-        } finally {
-            System.out.println("Deposited function completed, please try again if an error message was printed.");
         }
     }
 
     // withdraw
     public void withdraw(float withdrawAmount) {
-        try {
-            // update balance, print balance for user experience
-            // add transaction to transaction array
-            if (this.balance < withdrawAmount) {
-                return;
-            } else if (this.balance > withdrawAmount) {
-                this.balance -= withdrawAmount;
 
-                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                System.out.println("Withdrawed $" + withdrawAmount + " at " + timeStamp);
-                this.printBalance();
-                this.transactions.add("Withdrawed $" + withdrawAmount + " at " + timeStamp);
-            }
-
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error! Withdraw function only accepts positive amounts.");
-        } finally {
-            System.out.println("withdraw function completed, please try again if an error message was printed.");
+        // update balance, print balance for user experience
+        // add transaction to transaction array
+        if (this.balance < withdrawAmount || withdrawAmount < 0) {
+            throw new IllegalArgumentException("Withdraw amount exceeds available balance.");
+        } else if (this.balance > withdrawAmount) {
+            this.balance -= withdrawAmount;
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+            System.out.println("Withdrawed $" + withdrawAmount + " at " + timeStamp);
+            this.printBalance();
+            this.transactions.add("Withdrawed $" + withdrawAmount + " at " + timeStamp);
         }
     }
 
@@ -136,7 +127,7 @@ public class BankAccount {
         System.out.printf("Account belongs to: %20s \n", salary.name);
         System.out.printf("Account number: %20s \n", salary.accountNumber);
         System.out.printf("Account balance: %20f \n", salary.balance);
-        salary.deposit(100.00F);
+        salary.deposit(-100.00F);
 
         System.out.println(salary.transactions);
         salary.withdraw(10.5F);

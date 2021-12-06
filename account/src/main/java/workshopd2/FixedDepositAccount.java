@@ -6,99 +6,81 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class FixedDepositAccount {
-  private String name;
-  private String accountNumber;
-  private float balance;
-  private ArrayList<String> transactions = new ArrayList<String>();
-  private boolean accountActive = true;
-  private String openingDate;
-  private String closingDate = null;
+public class FixedDepositAccount extends BankAccount {
 
   // not sure if using final is the right way to go
   // private final float interest;
   // private final int duration;
-
   private float interest;
   private int duration;
-  // possibly another method to prevent setting interest/duration more than once
+
   private boolean changedInterest = false;
   private boolean changedDuration = false;
 
   public FixedDepositAccount(String name, float initDeposit) {
-    this.name = name;
-    this.accountNumber = generateAccountNumber();
-    this.balance = initDeposit;
-    this.interest = 3F;
+    super(name, initDeposit);
+    this.interest = 0.03F;
     this.duration = 6;
-    this.openingDate = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
   }
 
   public FixedDepositAccount(String name, float initDeposit, float interest) {
-    this.name = name;
-    this.accountNumber = generateAccountNumber();
-    this.balance = initDeposit;
+    super(name, initDeposit);
     this.interest = interest;
     this.duration = 6;
-    this.openingDate = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
   }
 
   public FixedDepositAccount(String name, float initDeposit, float interest, int duration) {
-    this.name = name;
-    this.accountNumber = generateAccountNumber();
-    this.balance = initDeposit;
+    super(name, initDeposit);
     this.interest = interest;
     this.duration = duration;
-    this.openingDate = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
   }
 
-  public String getName() {
-    return this.name;
-  }
-
-  public String getAccNum() {
-    return this.accountNumber;
-  }
-
+  @Override
   public float getBalance() {
-    System.out.println("Account balance: " + (this.balance + this.interest));
-    return this.balance + this.interest;
-  }
-
-  public void printBalance() {
-    System.out.println("Your balance: " + this.balance);
+    float newBalance = (1 + this.interest) * this.balance;
+    return newBalance;
   }
 
   public void setInterest(float newInterest) {
-    try {
-      if (!this.changedInterest) {
-        this.changedInterest = true;
-        this.interest = newInterest;
-        System.out.println("Interest updated to: " + newInterest);
-      }
-
-    } catch (IllegalArgumentException e) {
-      // TODO: handle exception
-      System.out.println("Error! You have already set your interest once. It cannot be changed.");
+    if (!this.changedInterest) {
+      this.changedInterest = true;
+      this.interest = newInterest;
+      System.out.println("Interest updated to: " + newInterest);
+    } else if (this.changedInterest) {
+      throw new IllegalArgumentException("You have already changed your interest once.");
     }
-
   }
 
-  public String generateAccountNumber() {
-    String num = "";
-    Random rand = new Random();
-    for (int i = 0; i < 7; i++) {
-      num += rand.nextInt(9);
+  public void setDuration(int newDuration) {
+    if (!this.changedDuration) {
+      this.changedDuration = true;
+      this.duration = newDuration;
+      System.out.println("Duration updated to: " + newDuration);
+    } else if (this.changedDuration) {
+      throw new IllegalArgumentException("You have already changed your duration once.");
     }
-    return num;
+  }
+
+  @Override
+  public void deposit(float depositAmount) {
+    // update balance, print balance for user experience
+    // add transaction to transaction array
+    System.out.println("Fixed deposit account does not have this deposit operation.");
+  }
+
+  @Override
+  public void withdraw(float withdrawAmount) {
+    // update balance, print balance for user experience
+    // add transaction to transaction array
+    System.out.println("Fixed deposit account does not have this withdraw operation.");
   }
 
   public static void main(String[] args) {
-    FixedDepositAccount savings = new FixedDepositAccount("Jimmy chin", 1000.00F, 4.0F, 10);
+    FixedDepositAccount savings = new FixedDepositAccount("Jimmy chin", 1000.00F, 0.045F, 10);
     savings.getName();
-    savings.setInterest(10.5F);
-    savings.setInterest(8.5F);
-    savings.getBalance();
+    savings.setInterest(0.05F);
+    System.out.println(savings.getBalance());
+    savings.deposit(300F);
 
   }
 }
